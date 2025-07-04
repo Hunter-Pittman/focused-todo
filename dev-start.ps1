@@ -75,16 +75,32 @@ Set-Location "$RootDir\backend"
 try {
     # Create bin directory if it doesn't exist
     if (-not (Test-Path "bin")) {
+        Write-Host "Creating bin directory..." -ForegroundColor Gray
         New-Item -ItemType Directory -Path "bin" | Out-Null
     }
     
-    go build -o "bin\focused-todo.exe" ".\cmd\focused-todo"
-    if ($LASTEXITCODE -ne 0) { throw "Go build failed" }
+    Write-Host "Running go build..." -ForegroundColor Gray
+    Write-Host "Command: go build -o bin\focused-todo.exe .\cmd\focused-todo" -ForegroundColor Gray
+    
+    # Capture both stdout and stderr
+    $buildOutput = go build -o "bin\focused-todo.exe" ".\cmd\focused-todo" 2>&1
+    
+    if ($LASTEXITCODE -ne 0) { 
+        Write-Host "Go build output:" -ForegroundColor Red
+        Write-Host $buildOutput -ForegroundColor Red
+        throw "Go build failed with exit code: $LASTEXITCODE" 
+    }
+    
+    # List contents of bin directory
+    Write-Host "Checking bin directory contents..." -ForegroundColor Gray
+    Get-ChildItem -Path "bin" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  - $_" -ForegroundColor Gray }
     
     # Verify the executable was created
     if (-not (Test-Path "bin\focused-todo.exe")) {
         throw "Backend executable was not created"
     }
+    
+    Write-Host "✅ Backend built successfully" -ForegroundColor Green
 }
 catch {
     Write-Host "❌ Failed to build backend: $_" -ForegroundColor Red
