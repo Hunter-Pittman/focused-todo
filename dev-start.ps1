@@ -82,6 +82,9 @@ try {
     Write-Host "Running go build..." -ForegroundColor Gray
     Write-Host "Command: go build -o bin\focused-todo.exe .\cmd\focused-todo" -ForegroundColor Gray
     
+    # Enable CGO for SQLite support
+    $env:CGO_ENABLED = "1"
+    
     # Capture both stdout and stderr
     $buildOutput = go build -o "bin\focused-todo.exe" ".\cmd\focused-todo" 2>&1
     
