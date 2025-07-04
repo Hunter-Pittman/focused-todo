@@ -3,6 +3,9 @@
 
 Write-Host "🚀 Starting Focused To-Do Development Environment" -ForegroundColor Green
 
+# Store the root directory
+$RootDir = Get-Location
+
 # Check if we're in the right directory
 if (-not (Test-Path "CLAUDE.md")) {
     Write-Host "❌ Please run this script from the focused-todo root directory" -ForegroundColor Red
@@ -51,7 +54,7 @@ Write-Host "✅ All dependencies found" -ForegroundColor Green
 
 # Build the shared types first
 Write-Host "🔧 Building shared types..." -ForegroundColor Cyan
-Set-Location "shared"
+Set-Location "$RootDir\shared"
 try {
     npm install
     if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
@@ -60,28 +63,41 @@ try {
 }
 catch {
     Write-Host "❌ Failed to build shared types: $_" -ForegroundColor Red
+    Set-Location $RootDir
     Read-Host "Press Enter to exit"
     exit 1
 }
-Set-Location ".."
+Set-Location $RootDir
 
 # Build and start the backend
 Write-Host "🔧 Building backend..." -ForegroundColor Cyan
-Set-Location "backend"
+Set-Location "$RootDir\backend"
 try {
+    # Create bin directory if it doesn't exist
+    if (-not (Test-Path "bin")) {
+        New-Item -ItemType Directory -Path "bin" | Out-Null
+    }
+    
     go build -o "bin\focused-todo.exe" ".\cmd\focused-todo"
     if ($LASTEXITCODE -ne 0) { throw "Go build failed" }
+    
+    # Verify the executable was created
+    if (-not (Test-Path "bin\focused-todo.exe")) {
+        throw "Backend executable was not created"
+    }
 }
 catch {
     Write-Host "❌ Failed to build backend: $_" -ForegroundColor Red
+    Set-Location $RootDir
     Read-Host "Press Enter to exit"
     exit 1
 }
 
 Write-Host "🔴 Starting backend server..." -ForegroundColor Red
 $BackendPath = Join-Path (Get-Location) "bin\focused-todo.exe"
+Write-Host "Backend path: $BackendPath" -ForegroundColor Gray
 $BackendProcess = Start-Process -FilePath $BackendPath -WindowStyle Minimized -PassThru
-Set-Location ".."
+Set-Location $RootDir
 
 # Wait a moment for backend to start
 Write-Host "Waiting for backend to start..." -ForegroundColor Yellow
@@ -89,7 +105,7 @@ Start-Sleep -Seconds 3
 
 # Build and start the frontend
 Write-Host "🔧 Building and starting frontend..." -ForegroundColor Cyan
-Set-Location "frontend"
+Set-Location "$RootDir\frontend"
 try {
     npm install
     if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
@@ -99,6 +115,7 @@ try {
 }
 catch {
     Write-Host "❌ Failed to build frontend: $_" -ForegroundColor Red
+    Set-Location $RootDir
     Read-Host "Press Enter to exit"
     exit 1
 }
@@ -127,15 +144,13 @@ function Stop-Services {
 $null = Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { Stop-Services }
 
 try {
-    # Make sure we're still in the frontend directory
-    if ((Get-Location).Path -notlike "*frontend") {
-        Set-Location "frontend"
-    }
+    # Make sure we're in the frontend directory
+    Set-Location "$RootDir\frontend"
     
     # Start the Electron app (this will block until the app closes)
     npm run dev
 }
 finally {
     Stop-Services
-    Set-Location ".."
+    Set-Location $RootDir
 }
