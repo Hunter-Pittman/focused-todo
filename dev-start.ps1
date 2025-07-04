@@ -94,9 +94,19 @@ catch {
 }
 
 Write-Host "🔴 Starting backend server..." -ForegroundColor Red
+Write-Host "Current location: $(Get-Location)" -ForegroundColor Gray
 $BackendPath = Join-Path (Get-Location) "bin\focused-todo.exe"
 Write-Host "Backend path: $BackendPath" -ForegroundColor Gray
-$BackendProcess = Start-Process -FilePath $BackendPath -WindowStyle Minimized -PassThru
+
+# Verify the backend executable exists before trying to start it
+if (Test-Path $BackendPath) {
+    $BackendProcess = Start-Process -FilePath $BackendPath -WindowStyle Minimized -PassThru
+} else {
+    Write-Host "❌ Backend executable not found at: $BackendPath" -ForegroundColor Red
+    Set-Location $RootDir
+    Read-Host "Press Enter to exit"
+    exit 1
+}
 Set-Location $RootDir
 
 # Wait a moment for backend to start
@@ -107,8 +117,16 @@ Start-Sleep -Seconds 3
 Write-Host "🔧 Building and starting frontend..." -ForegroundColor Cyan
 Set-Location "$RootDir\frontend"
 try {
+    Write-Host "Installing frontend dependencies..." -ForegroundColor Gray
     npm install
     if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
+    
+    # Verify concurrently is installed
+    if (-not (Test-Path "node_modules\.bin\concurrently.cmd")) {
+        Write-Host "Installing concurrently..." -ForegroundColor Yellow
+        npm install --save-dev concurrently
+        if ($LASTEXITCODE -ne 0) { throw "Failed to install concurrently" }
+    }
     
     npm run build:electron
     if ($LASTEXITCODE -ne 0) { throw "npm run build:electron failed" }
