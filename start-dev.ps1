@@ -5,6 +5,7 @@ Write-Host "[START] Starting Focused To-Do in development mode..." -ForegroundCo
 
 # Set environment variable for Electron
 $env:NODE_ENV = "development"
+$env:ELECTRON_ENABLE_LOGGING = "1"
 
 # Check if backend is running
 Write-Host "[CHECK] Checking if backend is running..." -ForegroundColor Yellow
