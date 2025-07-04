@@ -181,6 +181,11 @@ try {
     # Make sure we're in the frontend directory
     Set-Location "$RootDir\frontend"
     
+    Write-Host "[INFO] Starting Electron app with React dev server..." -ForegroundColor Cyan
+    Write-Host "[INFO] React will run on http://localhost:5173" -ForegroundColor Gray
+    Write-Host "[INFO] Please wait for both React and Electron to start..." -ForegroundColor Gray
+    Write-Host "" -ForegroundColor Gray
+    
     # Start the Electron app (this will block until the app closes)
     npm run dev
 }
