@@ -1,7 +1,7 @@
 # Focused To-Do Development Startup Script for Windows PowerShell
 # Run with: powershell -ExecutionPolicy Bypass -File dev-start.ps1
 
-Write-Host "🚀 Starting Focused To-Do Development Environment" -ForegroundColor Green
+Write-Host "[STARTUP] Starting Focused To-Do Development Environment" -ForegroundColor Green
 
 # Store the root directory
 $RootDir = Get-Location
@@ -13,7 +13,7 @@ if (-not (Test-Path "CLAUDE.md")) {
     exit 1
 }
 
-Write-Host "📋 Checking dependencies..." -ForegroundColor Yellow
+Write-Host "[CHECK] Checking dependencies..." -ForegroundColor Yellow
 
 # Function to check if a command exists
 function Test-Command {
@@ -29,7 +29,7 @@ function Test-Command {
 
 # Check for Go
 if (-not (Test-Command "go")) {
-    Write-Host "❌ Go is not installed. Please install Go 1.21 or later." -ForegroundColor Red
+    Write-Host "[ERROR] Go is not installed. Please install Go 1.21 or later." -ForegroundColor Red
     Write-Host "Download from: https://golang.org/dl/" -ForegroundColor Yellow
     Read-Host "Press Enter to exit"
     exit 1
@@ -37,7 +37,7 @@ if (-not (Test-Command "go")) {
 
 # Check for Node.js
 if (-not (Test-Command "node")) {
-    Write-Host "❌ Node.js is not installed. Please install Node.js 18 or later." -ForegroundColor Red
+    Write-Host "[ERROR] Node.js is not installed. Please install Node.js 18 or later." -ForegroundColor Red
     Write-Host "Download from: https://nodejs.org/" -ForegroundColor Yellow
     Read-Host "Press Enter to exit"
     exit 1
@@ -45,15 +45,15 @@ if (-not (Test-Command "node")) {
 
 # Check for npm
 if (-not (Test-Command "npm")) {
-    Write-Host "❌ npm is not installed. Please install npm." -ForegroundColor Red
+    Write-Host "[ERROR] npm is not installed. Please install npm." -ForegroundColor Red
     Read-Host "Press Enter to exit"
     exit 1
 }
 
-Write-Host "✅ All dependencies found" -ForegroundColor Green
+Write-Host "[OK] All dependencies found" -ForegroundColor Green
 
 # Build the shared types first
-Write-Host "🔧 Building shared types..." -ForegroundColor Cyan
+Write-Host "[BUILD] Building shared types..." -ForegroundColor Cyan
 Set-Location "$RootDir\shared"
 try {
     npm install
@@ -62,7 +62,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "npm run build failed" }
 }
 catch {
-    Write-Host "❌ Failed to build shared types: $_" -ForegroundColor Red
+    Write-Host "[ERROR] Failed to build shared types: $_" -ForegroundColor Red
     Set-Location $RootDir
     Read-Host "Press Enter to exit"
     exit 1
@@ -70,7 +70,7 @@ catch {
 Set-Location $RootDir
 
 # Build and start the backend
-Write-Host "🔧 Building backend..." -ForegroundColor Cyan
+Write-Host "[BUILD] Building backend..." -ForegroundColor Cyan
 Set-Location "$RootDir\backend"
 try {
     # Create bin directory if it doesn't exist
@@ -100,16 +100,16 @@ try {
         throw "Backend executable was not created"
     }
     
-    Write-Host "✅ Backend built successfully" -ForegroundColor Green
+    Write-Host "[OK] Backend built successfully" -ForegroundColor Green
 }
 catch {
-    Write-Host "❌ Failed to build backend: $_" -ForegroundColor Red
+    Write-Host "[ERROR] Failed to build backend: $_" -ForegroundColor Red
     Set-Location $RootDir
     Read-Host "Press Enter to exit"
     exit 1
 }
 
-Write-Host "🔴 Starting backend server..." -ForegroundColor Red
+Write-Host "[START] Starting backend server..." -ForegroundColor Yellow
 # The executable is in backend/bin, not root/bin
 $BackendPath = Join-Path $RootDir "backend\bin\focused-todo.exe"
 Write-Host "Backend path: $BackendPath" -ForegroundColor Gray
@@ -118,7 +118,7 @@ Write-Host "Backend path: $BackendPath" -ForegroundColor Gray
 if (Test-Path $BackendPath) {
     $BackendProcess = Start-Process -FilePath $BackendPath -WindowStyle Minimized -PassThru
 } else {
-    Write-Host "❌ Backend executable not found at: $BackendPath" -ForegroundColor Red
+    Write-Host "[ERROR] Backend executable not found at: $BackendPath" -ForegroundColor Red
     Set-Location $RootDir
     Read-Host "Press Enter to exit"
     exit 1
@@ -130,7 +130,7 @@ Write-Host "Waiting for backend to start..." -ForegroundColor Yellow
 Start-Sleep -Seconds 3
 
 # Build and start the frontend
-Write-Host "🔧 Building and starting frontend..." -ForegroundColor Cyan
+Write-Host "[BUILD] Building and starting frontend..." -ForegroundColor Cyan
 Set-Location "$RootDir\frontend"
 try {
     Write-Host "Installing frontend dependencies..." -ForegroundColor Gray
@@ -148,17 +148,17 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "npm run build:electron failed" }
 }
 catch {
-    Write-Host "❌ Failed to build frontend: $_" -ForegroundColor Red
+    Write-Host "[ERROR] Failed to build frontend: $_" -ForegroundColor Red
     Set-Location $RootDir
     Read-Host "Press Enter to exit"
     exit 1
 }
 
-Write-Host "🟢 Starting Electron application..." -ForegroundColor Green
+Write-Host "[START] Starting Electron application..." -ForegroundColor Green
 Write-Host ""
-Write-Host "🎉 Focused To-Do is starting up!" -ForegroundColor Green
-Write-Host "📝 Backend API: http://localhost:8080" -ForegroundColor Yellow
-Write-Host "💻 Frontend: Starting Electron app..." -ForegroundColor Yellow
+Write-Host "[SUCCESS] Focused To-Do is starting up!" -ForegroundColor Green
+Write-Host "[INFO] Backend API: http://localhost:8080" -ForegroundColor Yellow
+Write-Host "[INFO] Frontend: Starting Electron app..." -ForegroundColor Yellow
 Write-Host ""
 Write-Host "The app will start shortly. Close the Electron window to stop all services." -ForegroundColor Cyan
 Write-Host ""
@@ -166,12 +166,12 @@ Write-Host ""
 # Function to cleanup on exit
 function Stop-Services {
     Write-Host ""
-    Write-Host "🛑 Shutting down..." -ForegroundColor Yellow
+    Write-Host "[SHUTDOWN] Shutting down..." -ForegroundColor Yellow
     if ($BackendProcess -and -not $BackendProcess.HasExited) {
         Write-Host "Stopping backend server..." -ForegroundColor Yellow
         Stop-Process -Id $BackendProcess.Id -Force -ErrorAction SilentlyContinue
     }
-    Write-Host "✅ Cleanup complete" -ForegroundColor Green
+    Write-Host "[OK] Cleanup complete" -ForegroundColor Green
 }
 
 # Register cleanup for Ctrl+C
