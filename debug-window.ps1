@@ -2,8 +2,11 @@
 Write-Host "[DEBUG] Looking for Electron window..." -ForegroundColor Cyan
 
 # Find Electron processes
-Write-Host "`n[PROCESSES] Checking for Electron processes:" -ForegroundColor Yellow
-Get-Process | Where-Object { $_.ProcessName -like "*electron*" -or $_.ProcessName -like "*focused-todo*" } | Format-Table Id, ProcessName, MainWindowTitle
+Write-Host "`n[PROCESSES] Checking for all processes:" -ForegroundColor Yellow
+Get-Process | Where-Object { $_.ProcessName -like "*electron*" -or $_.ProcessName -like "*focused-todo*" -or $_.ProcessName -like "*node*" } | Format-Table Id, ProcessName, MainWindowTitle
+
+Write-Host "`n[ELECTRON] Looking specifically for Electron:" -ForegroundColor Yellow
+Get-Process | Where-Object { $_.ProcessName -eq "electron" } | Format-Table Id, ProcessName, MainWindowTitle
 
 # Try to bring window to front using Windows API
 Add-Type @"
