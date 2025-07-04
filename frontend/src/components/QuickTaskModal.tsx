@@ -278,7 +278,7 @@ export const QuickTaskModal: React.FC<QuickTaskModalProps> = ({
           </div>
 
           <div className="keyboard-hint">
-            Press <kbd>{process.platform === 'darwin' ? '⌘' : 'Ctrl'}</kbd> + <kbd>Enter</kbd> to create task
+            Press <kbd>{window.navigator?.userAgent?.includes('Mac') ? '⌘' : 'Ctrl'}</kbd> + <kbd>Enter</kbd> to create task
           </div>
         </form>
       </div>

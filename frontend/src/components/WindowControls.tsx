@@ -38,7 +38,10 @@ export const WindowControls: React.FC<WindowControlsProps> = ({ className = '' }
   }
 
   // On macOS, only show theme toggle (uses native traffic light buttons)
-  if (process.platform === 'darwin') {
+  // Check if we're in Electron environment and on macOS
+  const isMacOS = window.navigator?.userAgent?.includes('Mac') || false
+  
+  if (isMacOS) {
     return (
       <div className={`window-controls window-controls--macos ${className}`}>
         <ThemeToggle variant="icon" size="small" />
