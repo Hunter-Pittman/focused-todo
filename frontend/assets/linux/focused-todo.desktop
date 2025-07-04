@@ -1,0 +1,26 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Focused To-Do
+Comment=Your tasks, simplified
+Exec=focused-todo %U
+Icon=focused-todo
+Terminal=false
+StartupWMClass=Focused To-Do
+Categories=Office;ProjectManagement;GTD;
+Keywords=todo;task;productivity;focus;organization;
+StartupNotify=true
+MimeType=application/x-focused-todo;
+
+# Actions for quick operations
+Actions=QuickTask;ShowApp;
+
+[Desktop Action QuickTask]
+Name=Quick Task
+Exec=focused-todo --quick-task
+Icon=focused-todo-add
+
+[Desktop Action ShowApp]
+Name=Show App
+Exec=focused-todo --show
+Icon=focused-todo

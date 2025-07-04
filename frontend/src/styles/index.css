@@ -1,0 +1,235 @@
+/* Main Design System Entry Point */
+
+/* Import Design System Foundations */
+@import './design-tokens.css';
+@import './typography.css';
+
+/* =====================
+   Global Reset & Base Styles
+   ===================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  font-weight: var(--font-weight-body);
+  color: var(--color-label-primary);
+  background-color: var(--color-background-secondary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1;
+}
+
+/* =====================
+   Typography Elements
+   ===================== */
+
+h1 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-title1);
+  line-height: var(--line-height-title1);
+  font-weight: var(--font-weight-title1);
+  letter-spacing: -0.3px;
+  color: var(--color-label-primary);
+}
+
+h2 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-title2);
+  line-height: var(--line-height-title2);
+  font-weight: var(--font-weight-title2);
+  letter-spacing: -0.2px;
+  color: var(--color-label-primary);
+}
+
+h3 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-title3);
+  line-height: var(--line-height-title3);
+  font-weight: var(--font-weight-title3);
+  letter-spacing: -0.1px;
+  color: var(--color-label-primary);
+}
+
+h4 {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-headline);
+  line-height: var(--line-height-headline);
+  font-weight: var(--font-weight-headline);
+  letter-spacing: -0.05px;
+  color: var(--color-label-primary);
+}
+
+h5 {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-subhead);
+  line-height: var(--line-height-subhead);
+  font-weight: var(--font-weight-subhead);
+  color: var(--color-label-primary);
+}
+
+h6 {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-footnote);
+  line-height: var(--line-height-footnote);
+  font-weight: var(--font-weight-footnote);
+  color: var(--color-label-secondary);
+}
+
+p {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  font-weight: var(--font-weight-body);
+  color: var(--color-label-primary);
+}
+
+small {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-caption1);
+  line-height: var(--line-height-caption1);
+  font-weight: var(--font-weight-caption1);
+  color: var(--color-label-secondary);
+}
+
+/* =====================
+   Form Elements
+   ===================== */
+
+input,
+textarea,
+select {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--color-label-primary);
+  background-color: var(--color-background-primary);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: all var(--duration-fast) var(--transition-ease-out);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-blue);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-placeholder-text);
+}
+
+/* =====================
+   Button Base Styles
+   ===================== */
+
+button {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  font-weight: var(--font-weight-headline);
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: all var(--duration-fast) var(--transition-ease-out);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* =====================
+   Link Styles
+   ===================== */
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--transition-ease-out);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* =====================
+   Focus Management
+   ===================== */
+
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
+/* =====================
+   Selection Styles
+   ===================== */
+
+::selection {
+  background-color: var(--color-blue);
+  color: white;
+}
+
+::-moz-selection {
+  background-color: var(--color-blue);
+  color: white;
+}
+
+/* =====================
+   Scrollbar Styles (Webkit)
+   ===================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-fill-tertiary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-fill-secondary);
+}
+
+/* =====================
+   Responsive Adjustments
+   ===================== */
+
+@media (max-width: 768px) {
+  body {
+    font-size: var(--font-size-callout);
+    line-height: var(--line-height-callout);
+  }
+}

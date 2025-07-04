@@ -1,0 +1,70 @@
+/* WindowControls.css */
+
+.window-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  height: 32px;
+  -webkit-app-region: no-drag;
+}
+
+.window-controls--macos {
+  gap: var(--spacing-1);
+}
+
+.window-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.window-control:hover {
+  background: #e1e1e1;
+  color: #333;
+}
+
+.window-control:active {
+  background: #d1d1d1;
+}
+
+.window-control.close:hover {
+  background: #e81123;
+  color: white;
+}
+
+.window-control.close:active {
+  background: #c50e1f;
+}
+
+.window-control svg {
+  pointer-events: none;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .window-control {
+    color: #ccc;
+  }
+
+  .window-control:hover {
+    background: #404040;
+    color: #fff;
+  }
+
+  .window-control:active {
+    background: #505050;
+  }
+
+  .window-control.close:hover {
+    background: #e81123;
+    color: white;
+  }
+}

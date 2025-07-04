@@ -1,0 +1,246 @@
+/* Button.css - iOS/macOS-style Button Component */
+
+.button {
+  /* Base styles */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-text);
+  font-weight: var(--font-weight-headline);
+  text-decoration: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: nowrap;
+  outline: none;
+  transition: all var(--duration-fast) var(--transition-ease-out);
+  box-shadow: var(--shadow-button);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
+/* Size Variants */
+.button--small {
+  height: var(--button-height-sm);
+  padding: 0 var(--spacing-3);
+  font-size: var(--font-size-footnote);
+  line-height: var(--line-height-footnote);
+  gap: var(--spacing-1);
+}
+
+.button--medium {
+  height: var(--button-height-md);
+  padding: 0 var(--spacing-4);
+  font-size: var(--font-size-callout);
+  line-height: var(--line-height-callout);
+  gap: var(--spacing-2);
+}
+
+.button--large {
+  height: var(--button-height-lg);
+  padding: 0 var(--spacing-6);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  gap: var(--spacing-2);
+  border-radius: var(--radius-lg);
+}
+
+/* Color Variants */
+.button--primary {
+  background: var(--color-blue);
+  color: var(--color-white);
+}
+
+.button--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-blue) 85%, black);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.button--primary:active:not(:disabled) {
+  background: color-mix(in srgb, var(--color-blue) 70%, black);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.button--secondary {
+  background: var(--color-fill-secondary);
+  color: var(--color-label-primary);
+  border: 1px solid var(--color-separator);
+}
+
+.button--secondary:hover:not(:disabled) {
+  background: var(--color-fill-primary);
+  border-color: var(--color-blue);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.button--secondary:active:not(:disabled) {
+  background: var(--color-fill-tertiary);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.button--tertiary {
+  background: transparent;
+  color: var(--color-blue);
+  border: 1px solid transparent;
+}
+
+.button--tertiary:hover:not(:disabled) {
+  background: var(--color-fill-quaternary);
+  color: color-mix(in srgb, var(--color-blue) 85%, black);
+}
+
+.button--tertiary:active:not(:disabled) {
+  background: var(--color-fill-tertiary);
+  color: color-mix(in srgb, var(--color-blue) 70%, black);
+}
+
+.button--destructive {
+  background: var(--color-red);
+  color: var(--color-white);
+}
+
+.button--destructive:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-red) 85%, black);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.button--destructive:active:not(:disabled) {
+  background: color-mix(in srgb, var(--color-red) 70%, black);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* States */
+.button--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.button--loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.button--full-width {
+  width: 100%;
+}
+
+/* Icon Styles */
+.button__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.button__icon--left {
+  margin-right: var(--spacing-1);
+}
+
+.button__icon--right {
+  margin-left: var(--spacing-1);
+}
+
+.button--small .button__icon {
+  width: var(--icon-size-xs);
+  height: var(--icon-size-xs);
+}
+
+.button--medium .button__icon {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.button--large .button__icon {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+/* Content */
+.button__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Loading Spinner */
+.button__spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button__spinner-icon {
+  width: 16px;
+  height: 16px;
+  animation: button-spin 1s linear infinite;
+}
+
+.button--loading .button__content,
+.button--loading .button__icon {
+  opacity: 0;
+}
+
+@keyframes button-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* iOS-style Press Animation */
+@media (hover: none) and (pointer: coarse) {
+  .button:active:not(:disabled) {
+    transform: scale(0.98);
+    transition: transform 0.1s ease-out;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .button {
+    border: 2px solid currentColor;
+  }
+  
+  .button--primary {
+    border-color: var(--color-white);
+  }
+  
+  .button--secondary {
+    border-color: var(--color-label-primary);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+  
+  .button:hover:not(:disabled),
+  .button:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Dark mode optimizations handled automatically by CSS custom properties */

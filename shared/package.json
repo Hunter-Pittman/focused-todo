@@ -1,0 +1,19 @@
+{
+  "name": "focused-todo-shared",
+  "version": "0.1.0",
+  "description": "Shared types and utilities for Focused To-Do",
+  "main": "index.ts",
+  "private": true,
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "typescript",
+    "types",
+    "shared"
+  ]
+}

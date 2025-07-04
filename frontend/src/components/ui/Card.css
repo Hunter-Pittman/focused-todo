@@ -1,0 +1,133 @@
+/* Card.css - iOS/macOS-style Card Component */
+
+.card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-normal) var(--transition-ease-out);
+  overflow: hidden;
+}
+
+/* Variant Styles */
+.card--default {
+  background-color: var(--color-background-primary);
+  border: 1px solid var(--color-separator);
+  box-shadow: var(--shadow-sm);
+}
+
+.card--elevated {
+  background-color: var(--color-background-primary);
+  border: 1px solid var(--color-separator);
+  box-shadow: var(--shadow-card);
+}
+
+.card--outlined {
+  background-color: var(--color-background-primary);
+  border: 2px solid var(--color-separator);
+  box-shadow: none;
+}
+
+.card--filled {
+  background-color: var(--color-grouped-background-secondary);
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+
+/* Padding Variants */
+.card--padding-none {
+  padding: 0;
+}
+
+.card--padding-small {
+  padding: var(--spacing-3);
+}
+
+.card--padding-medium {
+  padding: var(--spacing-4);
+}
+
+.card--padding-large {
+  padding: var(--spacing-6);
+}
+
+/* Interactive State */
+.card--interactive {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.card--interactive:hover {
+  transform: translateY(-1px);
+}
+
+.card--interactive.card--default:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-blue);
+}
+
+.card--interactive.card--elevated:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-blue);
+}
+
+.card--interactive.card--outlined:hover {
+  border-color: var(--color-blue);
+  box-shadow: var(--shadow-sm);
+}
+
+.card--interactive.card--filled:hover {
+  background-color: var(--color-fill-quaternary);
+  border-color: var(--color-separator);
+}
+
+.card--interactive:active {
+  transform: translateY(0);
+  transition-duration: var(--duration-fast);
+}
+
+.card--interactive.card--default:active {
+  box-shadow: var(--shadow-sm);
+}
+
+.card--interactive.card--elevated:active {
+  box-shadow: var(--shadow-card);
+}
+
+/* Focus State for Keyboard Navigation */
+.card--interactive:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
+/* iOS-style Press Animation for Touch Devices */
+@media (hover: none) and (pointer: coarse) {
+  .card--interactive:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease-out;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 2px;
+  }
+  
+  .card--outlined {
+    border-width: 3px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  
+  .card--interactive:hover,
+  .card--interactive:active {
+    transform: none;
+  }
+}
+
+/* Dark mode handled automatically by CSS custom properties */

@@ -28,5 +28,39 @@ go.work.sum
 .env
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
+/.claude/
+
+# Build outputs
+/backend/bin/
+/frontend/dist/
+/shared/dist/
+
+# TypeScript compiled files in shared
+/shared/*.js
+/shared/*.js.map
+/shared/*.d.ts
+/shared/*.d.ts.map
+/shared/tsconfig.tsbuildinfo
+
+# Node.js dependencies - exclude ALL node_modules directories
+node_modules/
+**/node_modules/
+
+# npm cache
+.npm
+*.log
+npm-debug.log*
+
+# Build tools
+.vite/
+.eslintcache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

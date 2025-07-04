@@ -1,0 +1,402 @@
+/* Quick Task Modal Styles - Apple HIG Inspired */
+
+.quick-task-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.quick-task-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 480px;
+  margin: 20px;
+  animation: slideUp 0.3s ease-out;
+  max-height: calc(100vh - 40px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .quick-task-modal {
+    background: #1c1c1e;
+    color: white;
+    border: 1px solid #38383a;
+  }
+}
+
+.quick-task-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e5e5e7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .quick-task-header {
+    border-bottom-color: #38383a;
+  }
+}
+
+.quick-task-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  .quick-task-header h2 {
+    color: #f2f2f7;
+  }
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #8e8e93;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button:hover {
+  background: #f2f2f7;
+  color: #1d1d1f;
+}
+
+.close-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .close-button {
+    color: #8e8e93;
+  }
+  
+  .close-button:hover {
+    background: #2c2c2e;
+    color: #f2f2f7;
+  }
+}
+
+.quick-task-form {
+  padding: 20px 24px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group:last-of-type:not(.form-actions) {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-group label {
+    color: #f2f2f7;
+  }
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d1d6;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  background: white;
+  color: #1d1d1f;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-group input[type="text"]:disabled,
+.form-group textarea:disabled,
+.form-group select:disabled {
+  background: #f2f2f7;
+  color: #8e8e93;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-group input[type="text"],
+  .form-group textarea,
+  .form-group select {
+    background: #2c2c2e;
+    border-color: #48484a;
+    color: #f2f2f7;
+  }
+  
+  .form-group input[type="text"]:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: #0a84ff;
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.1);
+  }
+  
+  .form-group input[type="text"]:disabled,
+  .form-group textarea:disabled,
+  .form-group select:disabled {
+    background: #1c1c1e;
+    color: #8e8e93;
+  }
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+}
+
+.priority-label {
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.priority-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #e5e5e7;
+  outline: none;
+  appearance: none;
+  margin: 12px 0 8px 0;
+  cursor: pointer;
+}
+
+.priority-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #007aff;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.priority-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.priority-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #007aff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .priority-slider {
+    background: #48484a;
+  }
+  
+  .priority-slider::-webkit-slider-thumb {
+    background: #0a84ff;
+  }
+  
+  .priority-slider::-moz-range-thumb {
+    background: #0a84ff;
+  }
+}
+
+.priority-markers {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #8e8e93;
+  margin-top: 4px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 0;
+  padding-top: 8px;
+}
+
+.cancel-button,
+.create-button {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.cancel-button {
+  background: #f2f2f7;
+  color: #1d1d1f;
+}
+
+.cancel-button:hover {
+  background: #e5e5e7;
+}
+
+.cancel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.create-button {
+  background: #007aff;
+  color: white;
+}
+
+.create-button:hover {
+  background: #0056cc;
+}
+
+.create-button:disabled {
+  background: #8e8e93;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cancel-button {
+    background: #2c2c2e;
+    color: #f2f2f7;
+  }
+  
+  .cancel-button:hover {
+    background: #38383a;
+  }
+  
+  .create-button {
+    background: #0a84ff;
+  }
+  
+  .create-button:hover {
+    background: #0066cc;
+  }
+}
+
+.keyboard-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #8e8e93;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .keyboard-hint {
+    border-top-color: #38383a;
+  }
+}
+
+.keyboard-hint kbd {
+  background: #f2f2f7;
+  border: 1px solid #d1d1d6;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: monospace;
+  margin: 0 1px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .keyboard-hint kbd {
+    background: #2c2c2e;
+    border-color: #48484a;
+    color: #f2f2f7;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .quick-task-modal {
+    margin: 10px;
+    max-width: calc(100vw - 20px);
+  }
+  
+  .quick-task-header,
+  .quick-task-form {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .cancel-button,
+  .create-button {
+    flex: none;
+  }
+}

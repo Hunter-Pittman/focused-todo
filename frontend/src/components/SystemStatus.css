@@ -1,0 +1,242 @@
+/* SystemStatus.css */
+
+.system-status {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.status-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.refresh-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: #f8f9fa;
+}
+
+.refresh-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.status-item {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-label {
+  font-weight: 500;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.status-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.status-value {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: #e9ecef;
+  display: inline-block;
+  max-width: fit-content;
+}
+
+.status-value.connected,
+.status-value.available {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-value.error,
+.status-value.unavailable {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-value.loading {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-value.url {
+  background: #e3f2fd;
+  color: #0d47a1;
+  word-break: break-all;
+  max-width: 100%;
+}
+
+.last-check {
+  font-size: 0.75rem;
+  color: #888;
+  font-style: italic;
+}
+
+.actions-section {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1.5rem;
+}
+
+.actions-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  background: #007AFF;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.action-button:hover:not(:disabled) {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.action-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.action-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .system-status {
+    background: #2a2a2a;
+    border-color: #444;
+  }
+
+  .status-header h2,
+  .actions-section h3 {
+    color: #e0e0e0;
+  }
+
+  .status-item {
+    background: #3a3a3a;
+    border-color: #444;
+  }
+
+  .status-label {
+    color: #ccc;
+  }
+
+  .status-value {
+    background: #4a4a4a;
+    color: #e0e0e0;
+  }
+
+  .status-value.connected,
+  .status-value.available {
+    background: #1b5e20;
+    color: #c8e6c9;
+  }
+
+  .status-value.error,
+  .status-value.unavailable {
+    background: #b71c1c;
+    color: #ffcdd2;
+  }
+
+  .status-value.loading {
+    background: #e65100;
+    color: #ffe0b2;
+  }
+
+  .status-value.url {
+    background: #0d47a1;
+    color: #bbdefb;
+  }
+
+  .refresh-button:hover:not(:disabled) {
+    background: #404040;
+  }
+
+  .last-check {
+    color: #aaa;
+  }
+
+  .actions-section {
+    border-top-color: #444;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .system-status {
+    padding: 1rem;
+  }
+
+  .status-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-button {
+    min-width: auto;
+    width: 100%;
+  }
+}

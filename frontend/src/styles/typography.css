@@ -1,0 +1,194 @@
+/* Typography.css - Apple HIG Typography System */
+
+/* CSS Custom Properties for Typography */
+:root {
+  /* Font Families */
+  --font-family-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-family-text: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-family-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', 'Courier New', monospace;
+
+  /* Apple HIG Typography Scale */
+  /* Large Titles */
+  --font-size-largeTitle: 34px;
+  --line-height-largeTitle: 41px;
+  --font-weight-largeTitle: 700;
+
+  /* Titles */
+  --font-size-title1: 28px;
+  --line-height-title1: 34px;
+  --font-weight-title1: 700;
+
+  --font-size-title2: 22px;
+  --line-height-title2: 28px;
+  --font-weight-title2: 700;
+
+  --font-size-title3: 20px;
+  --line-height-title3: 25px;
+  --font-weight-title3: 600;
+
+  /* Headlines */
+  --font-size-headline: 17px;
+  --line-height-headline: 22px;
+  --font-weight-headline: 600;
+
+  /* Body */
+  --font-size-body: 17px;
+  --line-height-body: 22px;
+  --font-weight-body: 400;
+
+  /* Callout */
+  --font-size-callout: 16px;
+  --line-height-callout: 21px;
+  --font-weight-callout: 400;
+
+  /* Subhead */
+  --font-size-subhead: 15px;
+  --line-height-subhead: 20px;
+  --font-weight-subhead: 400;
+
+  /* Footnote */
+  --font-size-footnote: 13px;
+  --line-height-footnote: 18px;
+  --font-weight-footnote: 400;
+
+  /* Caption */
+  --font-size-caption1: 12px;
+  --line-height-caption1: 16px;
+  --font-weight-caption1: 400;
+
+  --font-size-caption2: 11px;
+  --line-height-caption2: 13px;
+  --font-weight-caption2: 400;
+
+  /* Font smoothing */
+  --font-smoothing: antialiased;
+}
+
+/* Typography Classes */
+.typography-largeTitle {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-largeTitle);
+  line-height: var(--line-height-largeTitle);
+  font-weight: var(--font-weight-largeTitle);
+  letter-spacing: -0.5px;
+}
+
+.typography-title1 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-title1);
+  line-height: var(--line-height-title1);
+  font-weight: var(--font-weight-title1);
+  letter-spacing: -0.3px;
+}
+
+.typography-title2 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-title2);
+  line-height: var(--line-height-title2);
+  font-weight: var(--font-weight-title2);
+  letter-spacing: -0.2px;
+}
+
+.typography-title3 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-title3);
+  line-height: var(--line-height-title3);
+  font-weight: var(--font-weight-title3);
+  letter-spacing: -0.1px;
+}
+
+.typography-headline {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-headline);
+  line-height: var(--line-height-headline);
+  font-weight: var(--font-weight-headline);
+  letter-spacing: -0.05px;
+}
+
+.typography-body {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  font-weight: var(--font-weight-body);
+}
+
+.typography-callout {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-callout);
+  line-height: var(--line-height-callout);
+  font-weight: var(--font-weight-callout);
+}
+
+.typography-subhead {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-subhead);
+  line-height: var(--line-height-subhead);
+  font-weight: var(--font-weight-subhead);
+}
+
+.typography-footnote {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-footnote);
+  line-height: var(--line-height-footnote);
+  font-weight: var(--font-weight-footnote);
+}
+
+.typography-caption1 {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-caption1);
+  line-height: var(--line-height-caption1);
+  font-weight: var(--font-weight-caption1);
+}
+
+.typography-caption2 {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-caption2);
+  line-height: var(--line-height-caption2);
+  font-weight: var(--font-weight-caption2);
+}
+
+/* Weight Modifiers */
+.font-weight-ultraLight { font-weight: 100; }
+.font-weight-thin { font-weight: 200; }
+.font-weight-light { font-weight: 300; }
+.font-weight-regular { font-weight: 400; }
+.font-weight-medium { font-weight: 500; }
+.font-weight-semibold { font-weight: 600; }
+.font-weight-bold { font-weight: 700; }
+.font-weight-heavy { font-weight: 800; }
+.font-weight-black { font-weight: 900; }
+
+/* Global Typography Improvements */
+* {
+  -webkit-font-smoothing: var(--font-smoothing);
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1;
+}
+
+/* Default text elements using Apple typography */
+h1 { @extend .typography-title1; }
+h2 { @extend .typography-title2; }
+h3 { @extend .typography-title3; }
+h4 { @extend .typography-headline; }
+h5 { @extend .typography-subhead; }
+h6 { @extend .typography-footnote; }
+
+p { @extend .typography-body; }
+small { @extend .typography-caption1; }
+
+/* Responsive Typography Adjustments */
+@media (max-width: 768px) {
+  :root {
+    --font-size-largeTitle: 30px;
+    --line-height-largeTitle: 36px;
+    
+    --font-size-title1: 24px;
+    --line-height-title1: 30px;
+    
+    --font-size-title2: 20px;
+    --line-height-title2: 25px;
+    
+    --font-size-title3: 18px;
+    --line-height-title3: 23px;
+  }
+}

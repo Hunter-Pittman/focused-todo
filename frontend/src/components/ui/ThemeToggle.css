@@ -1,0 +1,56 @@
+/* ThemeToggle.css */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme-toggle--icon {
+  min-width: auto;
+  padding: var(--spacing-2);
+}
+
+.theme-toggle--text {
+  gap: var(--spacing-2);
+}
+
+.theme-toggle--dropdown {
+  position: relative;
+}
+
+.theme-toggle__select {
+  font-family: var(--font-family-text);
+  font-size: var(--font-size-callout);
+  line-height: var(--line-height-callout);
+  color: var(--color-label-primary);
+  background-color: var(--color-background-primary);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2) var(--spacing-3);
+  cursor: pointer;
+  outline: none;
+  transition: all var(--duration-fast) var(--transition-ease-out);
+}
+
+.theme-toggle__select:hover {
+  border-color: var(--color-blue);
+}
+
+.theme-toggle__select:focus {
+  border-color: var(--color-blue);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+/* iOS-style appearance */
+.theme-toggle__select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-2) center;
+  background-size: 16px;
+  padding-right: var(--spacing-8);
+}
+
+/* Dark mode handled automatically by CSS custom properties */
