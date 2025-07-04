@@ -94,8 +94,8 @@ catch {
 }
 
 Write-Host "🔴 Starting backend server..." -ForegroundColor Red
-Write-Host "Current location: $(Get-Location)" -ForegroundColor Gray
-$BackendPath = Join-Path (Get-Location) "bin\focused-todo.exe"
+# The executable is in backend/bin, not root/bin
+$BackendPath = Join-Path $RootDir "backend\bin\focused-todo.exe"
 Write-Host "Backend path: $BackendPath" -ForegroundColor Gray
 
 # Verify the backend executable exists before trying to start it
