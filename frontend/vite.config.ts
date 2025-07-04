@@ -14,10 +14,7 @@ export default defineConfig({
   build: {
     outDir: 'dist/react',
     emptyOutDir: true,
-    sourcemap: true,
-    rollupOptions: {
-      input: resolve(__dirname, 'public/index.html')
-    }
+    sourcemap: true
   },
   server: {
     port: 5173,
