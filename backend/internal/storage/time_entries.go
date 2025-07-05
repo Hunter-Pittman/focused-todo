@@ -206,7 +206,7 @@ func (s *Storage) GetTimeEntriesByTask(taskID int) ([]types.TimeEntry, error) {
 	}
 	defer rows.Close()
 
-	var timeEntries []types.TimeEntry
+	timeEntries := []types.TimeEntry{}
 	for rows.Next() {
 		var timeEntry types.TimeEntry
 		err := rows.Scan(
@@ -254,7 +254,7 @@ func (s *Storage) GetTimeEntriesByProject(projectID int) ([]types.TimeEntry, err
 	}
 	defer rows.Close()
 
-	var timeEntries []types.TimeEntry
+	timeEntries := []types.TimeEntry{}
 	for rows.Next() {
 		var timeEntry types.TimeEntry
 		err := rows.Scan(
