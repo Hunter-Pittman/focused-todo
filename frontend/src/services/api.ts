@@ -36,7 +36,25 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorBody = await response.text();
+        console.error(`API Error (${response.status} ${response.statusText}):`, errorBody);
+        if (errorBody) {
+          try {
+            const errorJson = JSON.parse(errorBody);
+            if (errorJson.error || errorJson.message) {
+              errorMessage = errorJson.error || errorJson.message;
+            }
+          } catch {
+            // If not JSON, use the text
+            errorMessage = errorBody;
+          }
+        }
+      } catch (e) {
+        console.error('Failed to read error response:', e);
+      }
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();

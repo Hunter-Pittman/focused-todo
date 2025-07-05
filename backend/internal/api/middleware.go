@@ -141,10 +141,17 @@ func (s *Server) securityHeadersMiddleware(next http.Handler) http.Handler {
 		// CORS headers for Electron frontend
 		origin := r.Header.Get("Origin")
 		if isAllowedOrigin(origin) {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			if origin == "" {
+				// For Electron apps with no origin, allow without credentials
+				w.Header().Set("Access-Control-Allow-Origin", "*")
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			} else {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+				w.Header().Set("Access-Control-Allow-Credentials", "true")
+			}
 		}
 
 		if r.Method == "OPTIONS" {
@@ -186,6 +193,12 @@ func isAllowedOrigin(origin string) bool {
 	allowedOrigins := []string{
 		"http://localhost:5173", // Vite dev server
 		"http://127.0.0.1:5173", // Alternative localhost
+		"file://",               // Electron in production
+	}
+
+	// Also allow empty origin for Electron apps
+	if origin == "" {
+		return true
 	}
 
 	for _, allowed := range allowedOrigins {
