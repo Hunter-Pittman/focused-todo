@@ -67,6 +67,14 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     setError(null);
 
     try {
+      // Convert due_date from YYYY-MM-DD to RFC3339 format if provided
+      let due_date: string | undefined;
+      if (formData.due_date) {
+        // Convert "YYYY-MM-DD" to "YYYY-MM-DDTHH:mm:ss.sssZ" format
+        const date = new Date(formData.due_date + 'T00:00:00.000Z');
+        due_date = date.toISOString();
+      }
+
       let result: Task;
       
       if (task) {
@@ -76,7 +84,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
           description: formData.description.trim() || undefined,
           status: formData.status,
           priority: formData.priority,
-          due_date: formData.due_date || undefined
+          due_date: due_date
         });
       } else {
         // Create new task
@@ -87,7 +95,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
           description: formData.description.trim() || undefined,
           status: formData.status,
           priority: formData.priority,
-          due_date: formData.due_date || undefined
+          due_date: due_date
         });
       }
 
