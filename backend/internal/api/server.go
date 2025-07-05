@@ -47,6 +47,12 @@ func (s *Server) Start() error {
 	mux.HandleFunc("/api/tasks/", s.handleTaskByID)
 	mux.HandleFunc("/api/tasks", s.handleTasks)
 
+	// Time entry routes
+	mux.HandleFunc("/api/time-entries/start", s.handleTimeEntryStart)
+	mux.HandleFunc("/api/time-entries/active", s.handleTimeEntryActive)
+	mux.HandleFunc("/api/time-entries/", s.handleTimeEntryByID)
+	mux.HandleFunc("/api/time-entries", s.handleTimeEntries)
+
 	// Apply middleware chain (order matters - outermost first)
 	handler := s.loggingMiddleware(
 		s.rateLimitMiddleware(
@@ -467,5 +473,339 @@ func (s *Server) updateTaskStatus(w http.ResponseWriter, r *http.Request, taskID
 	}
 
 	response := types.NewAPIResponseWithMessage(*task, "Task status updated successfully")
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// handleTimeEntries handles time entry collection operations
+func (s *Server) handleTimeEntries(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		s.getTimeEntries(w, r)
+	case http.MethodPost:
+		s.createTimeEntry(w, r)
+	default:
+		s.writeError(w, http.StatusMethodNotAllowed, "Method not allowed")
+	}
+}
+
+// handleTimeEntryByID handles individual time entry operations
+func (s *Server) handleTimeEntryByID(w http.ResponseWriter, r *http.Request) {
+	// Extract path after /api/time-entries/
+	path := r.URL.Path[len("/api/time-entries/"):]
+	if path == "" {
+		s.writeError(w, http.StatusBadRequest, "Time entry ID is required")
+		return
+	}
+
+	// Split path components
+	pathParts := strings.Split(path, "/")
+	if len(pathParts) == 0 || pathParts[0] == "" {
+		s.writeError(w, http.StatusBadRequest, "Time entry ID is required")
+		return
+	}
+
+	// Parse time entry ID
+	timeEntryID, err := strconv.Atoi(pathParts[0])
+	if err != nil || timeEntryID <= 0 {
+		s.writeError(w, http.StatusBadRequest, "Invalid time entry ID")
+		return
+	}
+
+	// Determine the operation based on path and method
+	if len(pathParts) == 1 {
+		// /api/time-entries/{id}
+		switch r.Method {
+		case http.MethodGet:
+			s.getTimeEntry(w, r, timeEntryID)
+		case http.MethodPut:
+			s.updateTimeEntry(w, r, timeEntryID)
+		case http.MethodDelete:
+			s.deleteTimeEntry(w, r, timeEntryID)
+		default:
+			s.writeError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	} else if len(pathParts) == 2 && pathParts[1] == "stop" {
+		// /api/time-entries/{id}/stop
+		if r.Method == http.MethodPost {
+			s.stopTimeEntry(w, r, timeEntryID)
+		} else {
+			s.writeError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	} else {
+		s.writeError(w, http.StatusNotFound, "Endpoint not found")
+	}
+}
+
+// handleTimeEntryStart handles starting time tracking
+func (s *Server) handleTimeEntryStart(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		s.writeError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+	s.startTimeEntry(w, r)
+}
+
+// handleTimeEntryActive handles getting active time entry
+func (s *Server) handleTimeEntryActive(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		s.writeError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+	s.getActiveTimeEntry(w, r)
+}
+
+// getTimeEntries returns time entries for a task
+func (s *Server) getTimeEntries(w http.ResponseWriter, r *http.Request) {
+	taskIDStr := r.URL.Query().Get("task_id")
+	if taskIDStr == "" {
+		s.writeError(w, http.StatusBadRequest, "task_id parameter is required")
+		return
+	}
+
+	taskID, err := strconv.Atoi(taskIDStr)
+	if err != nil || taskID <= 0 {
+		s.writeError(w, http.StatusBadRequest, "task_id must be a positive integer")
+		return
+	}
+
+	entries, err := s.storage.GetTimeEntriesByTask(taskID)
+	if err != nil {
+		log.Printf("Failed to get time entries for task %d: %v", taskID, err)
+		s.writeError(w, http.StatusInternalServerError, "Failed to retrieve time entries")
+		return
+	}
+
+	response := types.NewAPIResponse(entries)
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// createTimeEntry creates a new time entry
+func (s *Server) createTimeEntry(w http.ResponseWriter, r *http.Request) {
+	var req types.CreateTimeEntryRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		s.writeError(w, http.StatusBadRequest, "Invalid JSON format")
+		return
+	}
+
+	// Sanitize input fields
+	req.Description = sanitizeDescription(req.Description)
+
+	// Validate the request
+	if validationErrors := s.validateRequest(req); validationErrors != nil {
+		response := types.NewErrorResponseWithDetails("Validation failed", "validation_error", validationErrors)
+		s.writeJSON(w, http.StatusBadRequest, response)
+		return
+	}
+
+	// Create time entry in database
+	entry, err := s.storage.CreateTimeEntry(req)
+	if err != nil {
+		log.Printf("Failed to create time entry: %v", err)
+		if strings.Contains(err.Error(), "task not found") {
+			s.writeError(w, http.StatusNotFound, "Task not found")
+			return
+		}
+		s.writeError(w, http.StatusInternalServerError, "Failed to create time entry")
+		return
+	}
+
+	response := types.NewAPIResponseWithMessage(*entry, "Time entry created successfully")
+	s.writeJSON(w, http.StatusCreated, response)
+}
+
+// getTimeEntry returns a specific time entry by ID
+func (s *Server) getTimeEntry(w http.ResponseWriter, r *http.Request, timeEntryID int) {
+	entry, err := s.storage.GetTimeEntry(timeEntryID)
+	if err != nil {
+		log.Printf("Failed to get time entry %d: %v", timeEntryID, err)
+		s.writeError(w, http.StatusNotFound, "Time entry not found")
+		return
+	}
+
+	response := types.NewAPIResponse(*entry)
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// updateTimeEntry updates a time entry by ID
+func (s *Server) updateTimeEntry(w http.ResponseWriter, r *http.Request, timeEntryID int) {
+	var req types.UpdateTimeEntryRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		s.writeError(w, http.StatusBadRequest, "Invalid JSON format")
+		return
+	}
+
+	// Sanitize input fields
+	if req.Description != nil {
+		*req.Description = sanitizeDescription(*req.Description)
+	}
+
+	// Validate the request
+	if validationErrors := s.validateRequest(req); validationErrors != nil {
+		response := types.NewErrorResponseWithDetails("Validation failed", "validation_error", validationErrors)
+		s.writeJSON(w, http.StatusBadRequest, response)
+		return
+	}
+
+	// Get the existing time entry to merge updates
+	existing, err := s.storage.GetTimeEntry(timeEntryID)
+	if err != nil {
+		log.Printf("Failed to get time entry %d: %v", timeEntryID, err)
+		s.writeError(w, http.StatusNotFound, "Time entry not found")
+		return
+	}
+
+	// Create a complete request with existing values and updates
+	updateReq := types.CreateTimeEntryRequest{
+		TaskID:      existing.TaskID,
+		StartTime:   existing.StartTime,
+		EndTime:     existing.EndTime,
+		Description: existing.Description,
+	}
+
+	// Apply updates if provided
+	if req.StartTime != nil {
+		updateReq.StartTime = *req.StartTime
+	}
+	if req.EndTime != nil {
+		updateReq.EndTime = req.EndTime
+	}
+	if req.Description != nil {
+		updateReq.Description = *req.Description
+	}
+
+	// Update time entry in database
+	entry, err := s.storage.UpdateTimeEntry(timeEntryID, updateReq)
+	if err != nil {
+		log.Printf("Failed to update time entry %d: %v", timeEntryID, err)
+		if strings.Contains(err.Error(), "not found") {
+			s.writeError(w, http.StatusNotFound, "Time entry not found")
+			return
+		}
+		s.writeError(w, http.StatusInternalServerError, "Failed to update time entry")
+		return
+	}
+
+	response := types.NewAPIResponseWithMessage(*entry, "Time entry updated successfully")
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// deleteTimeEntry deletes a time entry by ID
+func (s *Server) deleteTimeEntry(w http.ResponseWriter, r *http.Request, timeEntryID int) {
+	err := s.storage.DeleteTimeEntry(timeEntryID)
+	if err != nil {
+		log.Printf("Failed to delete time entry %d: %v", timeEntryID, err)
+		if strings.Contains(err.Error(), "not found") {
+			s.writeError(w, http.StatusNotFound, "Time entry not found")
+			return
+		}
+		s.writeError(w, http.StatusInternalServerError, "Failed to delete time entry")
+		return
+	}
+
+	response := types.NewAPIResponseWithMessage(struct{}{}, "Time entry deleted successfully")
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// startTimeEntry starts time tracking for a task
+func (s *Server) startTimeEntry(w http.ResponseWriter, r *http.Request) {
+	var req types.StartTimeEntryRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		s.writeError(w, http.StatusBadRequest, "Invalid JSON format")
+		return
+	}
+
+	// Sanitize input fields
+	req.Description = sanitizeDescription(req.Description)
+
+	// Validate the request
+	if validationErrors := s.validateRequest(req); validationErrors != nil {
+		response := types.NewErrorResponseWithDetails("Validation failed", "validation_error", validationErrors)
+		s.writeJSON(w, http.StatusBadRequest, response)
+		return
+	}
+
+	// Start time entry in database
+	entry, err := s.storage.StartTimeEntry(req)
+	if err != nil {
+		log.Printf("Failed to start time entry: %v", err)
+		if strings.Contains(err.Error(), "task not found") {
+			s.writeError(w, http.StatusNotFound, "Task not found")
+			return
+		}
+		if strings.Contains(err.Error(), "already has an active time entry") {
+			s.writeError(w, http.StatusConflict, err.Error())
+			return
+		}
+		s.writeError(w, http.StatusInternalServerError, "Failed to start time entry")
+		return
+	}
+
+	response := types.NewAPIResponseWithMessage(*entry, "Time tracking started successfully")
+	s.writeJSON(w, http.StatusCreated, response)
+}
+
+// stopTimeEntry stops an active time entry
+func (s *Server) stopTimeEntry(w http.ResponseWriter, r *http.Request, timeEntryID int) {
+	var req types.StopTimeEntryRequest
+	// Parse request body if present (optional description)
+	if r.Body != nil {
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil && err.Error() != "EOF" {
+			// Ignore EOF errors (empty body is valid)
+			s.writeError(w, http.StatusBadRequest, "Invalid JSON format")
+			return
+		}
+	}
+
+	// Sanitize input fields
+	req.Description = sanitizeDescription(req.Description)
+
+	// Stop time entry in database
+	entry, err := s.storage.StopTimeEntry(timeEntryID, req)
+	if err != nil {
+		log.Printf("Failed to stop time entry %d: %v", timeEntryID, err)
+		if strings.Contains(err.Error(), "not found") {
+			s.writeError(w, http.StatusNotFound, "Time entry not found")
+			return
+		}
+		if strings.Contains(err.Error(), "is not active") {
+			s.writeError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		s.writeError(w, http.StatusInternalServerError, "Failed to stop time entry")
+		return
+	}
+
+	response := types.NewAPIResponseWithMessage(*entry, "Time tracking stopped successfully")
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// getActiveTimeEntry returns the active time entry for a task
+func (s *Server) getActiveTimeEntry(w http.ResponseWriter, r *http.Request) {
+	taskIDStr := r.URL.Query().Get("task_id")
+	if taskIDStr == "" {
+		s.writeError(w, http.StatusBadRequest, "task_id parameter is required")
+		return
+	}
+
+	taskID, err := strconv.Atoi(taskIDStr)
+	if err != nil || taskID <= 0 {
+		s.writeError(w, http.StatusBadRequest, "task_id must be a positive integer")
+		return
+	}
+
+	entry, err := s.storage.GetActiveTimeEntry(taskID)
+	if err != nil {
+		if strings.Contains(err.Error(), "no active time entry") {
+			// Return null/nil when no active entry exists
+			response := types.NewAPIResponse[*types.TimeEntry](nil)
+			s.writeJSON(w, http.StatusOK, response)
+			return
+		}
+		log.Printf("Failed to get active time entry for task %d: %v", taskID, err)
+		s.writeError(w, http.StatusInternalServerError, "Failed to retrieve active time entry")
+		return
+	}
+
+	response := types.NewAPIResponse(*entry)
 	s.writeJSON(w, http.StatusOK, response)
 }

@@ -85,6 +85,13 @@ type StopTimeEntryRequest struct {
 	Description string `json:"description,omitempty" validate:"max=500"`
 }
 
+// UpdateTimeEntryRequest represents the request payload for updating a time entry
+type UpdateTimeEntryRequest struct {
+	StartTime   *time.Time `json:"start_time,omitempty"`
+	EndTime     *time.Time `json:"end_time,omitempty"`
+	Description *string    `json:"description,omitempty" validate:"omitempty,max=500"`
+}
+
 // TaskOrder represents task ID and its new priority for reordering
 type TaskOrder struct {
 	TaskID   int `json:"task_id" validate:"required,gt=0"`
