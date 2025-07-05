@@ -233,31 +233,31 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   };
 
   const getProgressColor = (progress: number, urgency: 'low' | 'medium' | 'high'): string => {
-    if (progress === 100) return '#28a745'; // Green for completed
+    if (progress === 100) return 'var(--color-green)'; // Green for completed
     
     switch (urgency) {
       case 'high':
-        return '#dc3545'; // Red for urgent
+        return 'var(--color-red)'; // Red for urgent
       case 'medium':
-        return '#fd7e14'; // Orange for medium urgency
+        return 'var(--color-orange)'; // Orange for medium urgency
       case 'low':
       default:
-        return '#007AFF'; // Blue for normal
+        return 'var(--color-blue)'; // Blue for normal
     }
   };
 
   const getStatusColor = (status: TaskStatus): string => {
     switch (status) {
       case 'pending':
-        return '#6c757d';
+        return 'var(--color-gray)';
       case 'in_progress':
-        return '#007AFF';
+        return 'var(--color-blue)';
       case 'completed':
-        return '#28a745';
+        return 'var(--color-green)';
       case 'cancelled':
-        return '#dc3545';
+        return 'var(--color-red)';
       default:
-        return '#6c757d';
+        return 'var(--color-gray)';
     }
   };
 
@@ -560,13 +560,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
       <div
         ref={setNodeRef}
         className={`gantt-day-column ${isOver ? 'day-drop-over' : ''}`}
-        style={{
-          position: 'absolute',
-          left: `${(dayIndex / 7) * 100}%`,
-          width: `${100 / 7}%`,
-          height: '100%',
-          zIndex: 0,
-        }}
         title={`Drop task here to reschedule to ${day.toLocaleDateString()}`}
       />
     );
@@ -689,12 +682,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 <div className="gantt-timeline-header">
                   <div className="task-label-column">Tasks</div>
                   <div className="gantt-days-header">
-                    {weekDays.map((day, index) => (
-                      <div key={index} className="gantt-day-header">
-                        <div className="day-name">{day.toLocaleDateString('en-US', { weekday: 'short' })}</div>
-                        <div className="day-date">{day.getDate()}</div>
-                      </div>
-                    ))}
+                    {weekDays.map((day, index) => {
+                      const today = new Date();
+                      const isToday = day.toDateString() === today.toDateString();
+                      return (
+                        <div key={index} className={`gantt-day-header ${isToday ? 'today' : ''}`}>
+                          <div className="day-name">{day.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                          <div className="day-date">{day.getDate()}</div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -724,38 +721,53 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             <div className="task-indicators">
                               {urgency === 'high' && (
                                 <span className="urgency-indicator high" title="High priority/Overdue">
-                                  🔴
+                                  ⚠️
                                 </span>
                               )}
                               {urgency === 'medium' && (
                                 <span className="urgency-indicator medium" title="Medium priority">
-                                  🟡
+                                  ⏱
                                 </span>
                               )}
                               <div className="progress-indicator" title={`${taskProgress}% complete`}>
-                                <div 
-                                  className="progress-circle"
-                                  style={{ 
-                                    background: `conic-gradient(${progressColor} ${taskProgress * 3.6}deg, #e0e0e0 0deg)` 
-                                  }}
-                                >
-                                  <span className="progress-text">{Math.round(taskProgress)}%</span>
-                                </div>
+                                <svg className="progress-ring" width="28" height="28">
+                                  <circle
+                                    className="progress-ring-bg"
+                                    cx="14"
+                                    cy="14"
+                                    r="12"
+                                    fill="none"
+                                    stroke="var(--color-fill-secondary)"
+                                    strokeWidth="2"
+                                  />
+                                  <circle
+                                    className="progress-ring-fill"
+                                    cx="14"
+                                    cy="14"
+                                    r="12"
+                                    fill="none"
+                                    stroke={progressColor}
+                                    strokeWidth="2"
+                                    strokeDasharray={`${(taskProgress / 100) * 75.4} 75.4`}
+                                    transform="rotate(-90 14 14)"
+                                  />
+                                </svg>
+                                <span className="progress-text">{Math.round(taskProgress)}%</span>
                               </div>
                             </div>
                           </div>
                           <div className="task-duration-info">
                             <span className="scheduled-duration" title="Scheduled duration">
-                              📅 {formatDuration(task.duration)}
+                              {formatDuration(task.duration)}
                             </span>
                             {task.actualDuration > 0 && (
                               <span className="actual-duration" title="Actual time logged">
-                                ⏱️ {formatDuration(task.actualDuration)}
+                                {formatDuration(task.actualDuration)}
                               </span>
                             )}
                             {task.due_date && (
                               <span className={`due-date ${urgency}`} title="Due date">
-                                📅 {new Date(task.due_date).toLocaleDateString()}
+                                {new Date(task.due_date).toLocaleDateString()}
                               </span>
                             )}
                           </div>
@@ -765,7 +777,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                           onClick={() => onEditTask(task)}
                           title="Edit task"
                         >
-                          ✎
+                          ✏️
                         </button>
                       </div>
                       
