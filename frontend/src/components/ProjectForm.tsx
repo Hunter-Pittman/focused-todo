@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Project } from '../../../shared/types';
 import { appService } from '../services/api';
-import { getIconEmoji } from '../utils/iconMap';
+import { getIconEmoji } from '../utils';
 import './ProjectForm.css';
 
 interface ProjectFormProps {
