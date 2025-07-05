@@ -3,8 +3,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
+  color: var(--color-label-primary);
 }
 
 .timeline-header {
@@ -12,15 +12,15 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-separator);
+  background-color: var(--color-background-secondary);
 }
 
 .timeline-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--color-label-primary);
 }
 
 .timeline-controls {
@@ -30,9 +30,9 @@
 }
 
 .nav-btn {
-  background-color: var(--color-bg-interactive);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
+  background-color: var(--color-fill-tertiary);
+  border: 1px solid var(--color-separator);
+  color: var(--color-label-secondary);
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
@@ -41,15 +41,15 @@
 }
 
 .nav-btn:hover {
-  background-color: var(--color-bg-interactive-hover);
-  border-color: var(--color-border-hover);
+  background-color: var(--color-fill-secondary);
+  border-color: var(--color-opaque-separator);
 }
 
 .current-week,
 .current-range {
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: var(--color-label-primary);
   min-width: 180px;
   text-align: center;
 }
@@ -78,17 +78,17 @@
 .loading-state,
 .error-state p {
   margin: 0 0 8px 0;
-  color: var(--color-text-primary);
+  color: var(--color-label-primary);
   font-size: 16px;
 }
 
 .empty-subtitle {
-  color: var(--color-text-secondary) !important;
+  color: var(--color-label-secondary) !important;
   font-size: 14px !important;
 }
 
 .retry-btn {
-  background-color: var(--color-accent);
+  background-color: var(--color-blue);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -112,8 +112,8 @@
 }
 
 .gantt-header {
-  border-bottom: 2px solid var(--color-border);
-  background-color: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-separator);
+  background-color: var(--color-background-secondary);
 }
 
 .gantt-timeline-header {
@@ -126,24 +126,24 @@
   min-width: 300px;
   padding: 16px;
   font-weight: 600;
-  color: var(--color-text-primary);
-  border-right: 1px solid var(--color-border);
+  color: var(--color-label-primary);
+  border-right: 1px solid var(--color-separator);
   display: flex;
   align-items: center;
-  background-color: var(--color-bg-secondary);
+  background-color: var(--color-background-secondary);
 }
 
 .gantt-days-header {
   flex: 1;
   display: flex;
-  background-color: var(--color-bg-secondary);
+  background-color: var(--color-background-secondary);
 }
 
 .gantt-day-header {
   flex: 1;
   padding: 8px;
   text-align: center;
-  border-right: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-separator);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -157,14 +157,14 @@
 .day-name {
   font-weight: 600;
   font-size: 12px;
-  color: var(--color-text-secondary);
+  color: var(--color-label-secondary);
   text-transform: uppercase;
 }
 
 .day-date {
   font-size: 16px;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--color-label-primary);
 }
 
 .gantt-body {
@@ -191,14 +191,14 @@
 }
 
 .gantt-day-column.day-drop-over {
-  border-color: var(--color-accent);
+  border-color: var(--color-blue);
   background-color: rgba(0, 122, 255, 0.1);
 }
 
 .gantt-row {
   display: flex;
   min-height: 56px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-separator);
   position: relative;
 }
 
@@ -210,11 +210,11 @@
   width: 300px;
   min-width: 300px;
   padding: 16px;
-  border-right: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-separator);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--color-bg-primary);
+  background-color: var(--color-background-primary);
 }
 
 .task-info {
@@ -234,7 +234,7 @@
 
 .task-title {
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: var(--color-label-primary);
   cursor: pointer;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -243,7 +243,7 @@
 }
 
 .task-title:hover {
-  color: var(--color-accent);
+  color: var(--color-blue);
 }
 
 .task-indicators {
@@ -289,7 +289,7 @@
 .progress-text {
   font-size: 9px;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--color-label-primary);
   z-index: 1;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
@@ -304,15 +304,15 @@
 .actual-duration,
 .due-date {
   font-size: 11px;
-  color: var(--color-text-secondary);
-  background-color: var(--color-bg-interactive);
+  color: var(--color-label-secondary);
+  background-color: var(--color-fill-tertiary);
   padding: 2px 6px;
   border-radius: 4px;
   white-space: nowrap;
 }
 
 .actual-duration {
-  background-color: var(--color-accent);
+  background-color: var(--color-blue);
   color: white;
 }
 
@@ -328,8 +328,8 @@
 }
 
 .due-date.low {
-  background-color: var(--color-bg-interactive);
-  color: var(--color-text-secondary);
+  background-color: var(--color-fill-tertiary);
+  color: var(--color-label-secondary);
 }
 
 @keyframes urgentPulse {
@@ -344,7 +344,7 @@
 .edit-task-btn {
   background: none;
   border: none;
-  color: var(--color-text-secondary);
+  color: var(--color-label-secondary);
   cursor: pointer;
   font-size: 14px;
   padding: 4px 8px;
@@ -359,8 +359,8 @@
 }
 
 .edit-task-btn:hover {
-  background-color: var(--color-bg-interactive);
-  color: var(--color-text-primary);
+  background-color: var(--color-fill-tertiary);
+  color: var(--color-label-primary);
 }
 
 .gantt-timeline {
@@ -426,7 +426,7 @@
 
 /* Drag overlay styles */
 .drag-overlay {
-  background-color: var(--color-accent);
+  background-color: var(--color-blue);
   color: white;
   padding: 8px 12px;
   border-radius: 6px;
@@ -461,7 +461,7 @@
   transform: translateX(-50%);
   width: 2px;
   height: 100%;
-  background-color: var(--color-accent);
+  background-color: var(--color-blue);
   animation: dropIndicator 0.5s ease-in-out infinite alternate;
 }
 
