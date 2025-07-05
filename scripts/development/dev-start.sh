@@ -3,11 +3,27 @@
 # Focused To-Do Development Startup Script
 echo "🚀 Starting Focused To-Do Development Environment"
 
-# Check if we're in the right directory
-if [ ! -f "CLAUDE.md" ]; then
-    echo "❌ Please run this script from the focused-todo root directory"
+# Find the project root directory (where CLAUDE.md is located)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT=""
+
+# Search upward from script directory to find project root
+current_dir="$SCRIPT_DIR"
+while [ "$current_dir" != "/" ]; do
+    if [ -f "$current_dir/CLAUDE.md" ]; then
+        PROJECT_ROOT="$current_dir"
+        break
+    fi
+    current_dir="$(dirname "$current_dir")"
+done
+
+if [ -z "$PROJECT_ROOT" ]; then
+    echo "❌ Could not find project root (CLAUDE.md not found)"
     exit 1
 fi
+
+echo "📁 Project root: $PROJECT_ROOT"
+cd "$PROJECT_ROOT"
 
 # Function to check if a command exists
 command_exists() {

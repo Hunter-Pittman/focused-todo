@@ -3,15 +3,34 @@
 
 Write-Host "[STARTUP] Starting Focused To-Do Development Environment" -ForegroundColor Green
 
-# Store the root directory
-$RootDir = Get-Location
+# Find the project root directory (where CLAUDE.md is located)
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ProjectRoot = $null
 
-# Check if we're in the right directory
-if (-not (Test-Path "CLAUDE.md")) {
-    Write-Host "❌ Please run this script from the focused-todo root directory" -ForegroundColor Red
+# Search upward from script directory to find project root
+$currentDir = $ScriptDir
+while ($currentDir -ne $null -and $currentDir -ne "") {
+    if (Test-Path (Join-Path $currentDir "CLAUDE.md")) {
+        $ProjectRoot = $currentDir
+        break
+    }
+    $parent = Split-Path -Parent $currentDir
+    if ($parent -eq $currentDir) {
+        # We've reached the root directory
+        break
+    }
+    $currentDir = $parent
+}
+
+if ($ProjectRoot -eq $null) {
+    Write-Host "❌ Could not find project root (CLAUDE.md not found)" -ForegroundColor Red
     Read-Host "Press Enter to exit"
     exit 1
 }
+
+Write-Host "📁 Project root: $ProjectRoot" -ForegroundColor Gray
+Set-Location $ProjectRoot
+$RootDir = $ProjectRoot
 
 Write-Host "[CHECK] Checking dependencies..." -ForegroundColor Yellow
 
