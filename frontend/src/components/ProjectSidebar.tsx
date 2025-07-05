@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Project } from '../../../shared/types';
 import { appService } from '../services/api';
 import { Card, Button } from './ui';
-import { getIconEmoji } from '../utils';
+import { getIconEmoji } from '@/utils/iconMap';
 import './ProjectSidebar.css';
 
 interface ProjectSidebarProps {

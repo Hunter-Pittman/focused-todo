@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp, useProjects, useActiveProject } from '../context/AppContext';
 import { appService } from '../services/api';
 import { TaskStatus } from '../../../shared/types';
-import { getIconEmoji } from '../utils';
+import { getIconEmoji } from '@/utils/iconMap';
 import './QuickTaskModal.css';
 
 interface QuickTaskModalProps {
