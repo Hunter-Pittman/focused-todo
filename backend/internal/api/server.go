@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -42,8 +43,9 @@ func (s *Server) Start() error {
 	// API routes
 	mux.HandleFunc("/api/health", s.handleHealth)
 	mux.HandleFunc("/api/projects", s.handleProjects)
-	mux.HandleFunc("/api/tasks", s.handleTasks)
 	mux.HandleFunc("/api/tasks/reorder", s.handleTasksReorder)
+	mux.HandleFunc("/api/tasks/", s.handleTaskByID)
+	mux.HandleFunc("/api/tasks", s.handleTasks)
 
 	// Apply middleware chain (order matters - outermost first)
 	handler := s.loggingMiddleware(
@@ -329,5 +331,141 @@ func (s *Server) handleTasksReorder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := types.NewAPIResponseWithMessage(struct{}{}, "Tasks reordered successfully")
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// handleTaskByID handles individual task operations
+func (s *Server) handleTaskByID(w http.ResponseWriter, r *http.Request) {
+	// Extract path after /api/tasks/
+	path := r.URL.Path[len("/api/tasks/"):]
+	if path == "" {
+		s.writeError(w, http.StatusBadRequest, "Task ID is required")
+		return
+	}
+
+	// Split path components
+	pathParts := strings.Split(path, "/")
+	if len(pathParts) == 0 || pathParts[0] == "" {
+		s.writeError(w, http.StatusBadRequest, "Task ID is required")
+		return
+	}
+
+	// Parse task ID
+	taskID, err := strconv.Atoi(pathParts[0])
+	if err != nil || taskID <= 0 {
+		s.writeError(w, http.StatusBadRequest, "Invalid task ID")
+		return
+	}
+
+	// Determine the operation based on path and method
+	if len(pathParts) == 1 {
+		// /api/tasks/{id}
+		switch r.Method {
+		case http.MethodGet:
+			s.getTask(w, r, taskID)
+		case http.MethodPut:
+			s.updateTask(w, r, taskID)
+		case http.MethodDelete:
+			s.deleteTask(w, r, taskID)
+		default:
+			s.writeError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	} else if len(pathParts) == 2 && pathParts[1] == "status" {
+		// /api/tasks/{id}/status
+		switch r.Method {
+		case http.MethodPatch:
+			s.updateTaskStatus(w, r, taskID)
+		default:
+			s.writeError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	} else {
+		s.writeError(w, http.StatusNotFound, "Endpoint not found")
+	}
+}
+
+// getTask returns a specific task by ID
+func (s *Server) getTask(w http.ResponseWriter, r *http.Request, taskID int) {
+	task, err := s.storage.GetTask(taskID)
+	if err != nil {
+		log.Printf("Failed to get task %d: %v", taskID, err)
+		s.writeError(w, http.StatusNotFound, "Task not found")
+		return
+	}
+
+	response := types.NewAPIResponse(*task)
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// updateTask updates a task by ID
+func (s *Server) updateTask(w http.ResponseWriter, r *http.Request, taskID int) {
+	var req types.CreateTaskRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		s.writeError(w, http.StatusBadRequest, "Invalid JSON format")
+		return
+	}
+
+	// Sanitize input fields
+	req.Title = sanitizeTaskTitle(req.Title)
+	req.Description = sanitizeDescription(req.Description)
+
+	// Validate the request
+	if validationErrors := s.validateRequest(req); validationErrors != nil {
+		response := types.NewErrorResponseWithDetails("Validation failed", "validation_error", validationErrors)
+		s.writeJSON(w, http.StatusBadRequest, response)
+		return
+	}
+
+	// Update task in database
+	task, err := s.storage.UpdateTask(taskID, req)
+	if err != nil {
+		log.Printf("Failed to update task %d: %v", taskID, err)
+		s.writeError(w, http.StatusInternalServerError, "Failed to update task")
+		return
+	}
+
+	response := types.NewAPIResponseWithMessage(*task, "Task updated successfully")
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// deleteTask deletes a task by ID
+func (s *Server) deleteTask(w http.ResponseWriter, r *http.Request, taskID int) {
+	err := s.storage.DeleteTask(taskID)
+	if err != nil {
+		log.Printf("Failed to delete task %d: %v", taskID, err)
+		s.writeError(w, http.StatusInternalServerError, "Failed to delete task")
+		return
+	}
+
+	response := types.NewAPIResponseWithMessage(struct{}{}, "Task deleted successfully")
+	s.writeJSON(w, http.StatusOK, response)
+}
+
+// updateTaskStatus updates only the status of a task
+func (s *Server) updateTaskStatus(w http.ResponseWriter, r *http.Request, taskID int) {
+	var req struct {
+		Status types.TaskStatus `json:"status" validate:"required"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		s.writeError(w, http.StatusBadRequest, "Invalid JSON format")
+		return
+	}
+
+	// Validate the request
+	if validationErrors := s.validateRequest(req); validationErrors != nil {
+		response := types.NewErrorResponseWithDetails("Validation failed", "validation_error", validationErrors)
+		s.writeJSON(w, http.StatusBadRequest, response)
+		return
+	}
+
+	// Update task status in database
+	task, err := s.storage.UpdateTaskStatus(taskID, req.Status)
+	if err != nil {
+		log.Printf("Failed to update task status %d: %v", taskID, err)
+		s.writeError(w, http.StatusInternalServerError, "Failed to update task status")
+		return
+	}
+
+	response := types.NewAPIResponseWithMessage(*task, "Task status updated successfully")
 	s.writeJSON(w, http.StatusOK, response)
 }
