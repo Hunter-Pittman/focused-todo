@@ -83,15 +83,50 @@ class ApiClient {
   }
 
   async getProjectsWithTaskCounts(): Promise<(Project & { task_count: number })[]> {
-    const response = await this.fetch<(Project & { task_count: number })[]>('/api/projects/with-counts');
-    return response.data;
+    // Backend doesn't have with-counts endpoint, so we'll fetch projects and tasks separately
+    try {
+      const projectsResponse = await this.fetch<Project[]>('/api/projects');
+      const tasksResponse = await this.fetch<Task[]>('/api/tasks');
+      
+      const projects = projectsResponse.data || [];
+      const tasks = tasksResponse.data || [];
+      
+      // Count tasks per project
+      return projects.map(project => {
+        const taskCount = tasks.filter(task => task.project_id === project.id).length;
+        return { ...project, task_count: taskCount };
+      });
+    } catch (error) {
+      console.error('Failed to get projects with counts:', error);
+      return [];
+    }
   }
 
   // Tasks API
   async getTasks(projectId?: number): Promise<Task[]> {
-    const query = projectId ? `?project_id=${projectId}` : '';
-    const response = await this.fetch<Task[]>(`/api/tasks${query}`);
-    return response.data;
+    // Backend requires project_id, so return empty array if not provided
+    if (!projectId) {
+      // If no project ID, we need to get all tasks by fetching from each project
+      try {
+        const projectsResponse = await this.fetch<Project[]>('/api/projects');
+        const projects = projectsResponse.data || [];
+        
+        const allTasks: Task[] = [];
+        for (const project of projects) {
+          const response = await this.fetch<Task[]>(`/api/tasks?project_id=${project.id}`);
+          if (response.data) {
+            allTasks.push(...response.data);
+          }
+        }
+        return allTasks;
+      } catch (error) {
+        console.error('Failed to get all tasks:', error);
+        return [];
+      }
+    }
+    
+    const response = await this.fetch<Task[]>(`/api/tasks?project_id=${projectId}`);
+    return response.data || [];
   }
 
   async getTask(id: number): Promise<Task> {
