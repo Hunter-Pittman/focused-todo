@@ -101,19 +101,27 @@ class ApiClient {
   }
 
   async getProjectsWithTaskCounts(): Promise<(Project & { task_count: number })[]> {
-    // Backend doesn't have with-counts endpoint, so we'll fetch projects and tasks separately
+    // Backend doesn't have with-counts endpoint, so we'll fetch projects first
     try {
       const projectsResponse = await this.fetch<Project[]>('/api/projects');
-      const tasksResponse = await this.fetch<Task[]>('/api/tasks');
-      
       const projects = projectsResponse.data || [];
-      const tasks = tasksResponse.data || [];
       
-      // Count tasks per project
-      return projects.map(project => {
-        const taskCount = tasks.filter(task => task.project_id === project.id).length;
-        return { ...project, task_count: taskCount };
-      });
+      // Fetch task counts for each project individually
+      const projectsWithCounts = await Promise.all(
+        projects.map(async (project) => {
+          try {
+            const tasksResponse = await this.fetch<Task[]>(`/api/tasks?project_id=${project.id}`);
+            const tasks = tasksResponse.data || [];
+            return { ...project, task_count: tasks.length };
+          } catch (error) {
+            console.error(`Failed to get tasks for project ${project.id}:`, error);
+            // If we can't get tasks for a project, default to 0
+            return { ...project, task_count: 0 };
+          }
+        })
+      );
+      
+      return projectsWithCounts;
     } catch (error) {
       console.error('Failed to get projects with counts:', error);
       return [];

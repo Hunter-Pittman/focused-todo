@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Project } from '../../../shared/types';
 import { appService } from '../services/api';
 import { Card, Button } from './ui';
+import { getIconEmoji } from '../utils/iconMap';
 import './ProjectSidebar.css';
 
 interface ProjectSidebarProps {
@@ -116,7 +117,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                 onClick={() => handleProjectClick(project)}
               >
                 <div className="project-icon" style={{ backgroundColor: project.color }}>
-                  {project.icon}
+                  {getIconEmoji(project.icon)}
                 </div>
                 <div className="project-info">
                   <div className="project-name">{project.name}</div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Project } from '../../../shared/types';
 import { appService } from '../services/api';
+import { getIconEmoji } from '../utils/iconMap';
 import './ProjectForm.css';
 
 interface ProjectFormProps {
@@ -16,8 +17,8 @@ const DEFAULT_COLORS = [
 ];
 
 const DEFAULT_ICONS = [
-  '📋', '📝', '💼', '🎯', '⚡', '🔥', '💡', '🚀', '⭐', '💎',
-  '🏆', '🎨', '🔧', '📊', '📈', '🎵', '🎮', '🏃', '🍕', '☕'
+  'clipboard', 'note', 'briefcase', 'target', 'bolt', 'fire', 'lightbulb', 'rocket', 'star', 'gem',
+  'trophy', 'palette', 'wrench', 'chart-bar', 'chart-line', 'music', 'gamepad', 'running', 'pizza', 'coffee'
 ];
 
 export const ProjectForm: React.FC<ProjectFormProps> = ({
@@ -201,7 +202,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                   onClick={() => handleIconSelect(icon)}
                   disabled={loading}
                 >
-                  {icon}
+                  {getIconEmoji(icon)}
                 </button>
               ))}
             </div>
@@ -211,7 +212,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
             <div className="preview-label">Preview:</div>
             <div className="project-preview">
               <div className="preview-icon" style={{ backgroundColor: formData.color }}>
-                {formData.icon}
+                {getIconEmoji(formData.icon)}
               </div>
               <div className="preview-info">
                 <div className="preview-name">{formData.name || 'Project Name'}</div>
