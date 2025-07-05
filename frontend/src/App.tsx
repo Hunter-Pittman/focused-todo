@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { WindowControls } from './components/WindowControls'
 import { SystemStatus } from './components/SystemStatus'
 import { TrayMenuManager } from './components/TrayMenuManager'
@@ -29,6 +29,10 @@ const App: React.FC = () => {
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
+
+  // Refresh function refs
+  const refreshProjects = useRef<(() => Promise<void>) | null>(null)
+  const refreshTasks = useRef<(() => Promise<void>) | null>(null)
 
   const handleProjectSelect = (project: Project) => {
     setSelectedProject(project)
@@ -61,19 +65,31 @@ const App: React.FC = () => {
     setIsTaskFormOpen(true)
   }
 
-  const handleProjectFormSubmit = (project: Project) => {
+  const handleProjectFormSubmit = async (project: Project) => {
     if (!editingProject) {
       // New project created, select it
       setSelectedProject(project)
+      // Refresh the projects list to show the new project
+      if (refreshProjects.current) {
+        await refreshProjects.current()
+      }
     } else if (selectedProject && selectedProject.id === project.id) {
       // Updated current project, refresh the reference
       setSelectedProject(project)
+      // Refresh the projects list to show updated data
+      if (refreshProjects.current) {
+        await refreshProjects.current()
+      }
     }
   }
 
-  const handleTaskFormSubmit = (task: Task) => {
-    // Task created or updated, the TaskList will refresh automatically
+  const handleTaskFormSubmit = async (task: Task) => {
+    // Task created or updated
     setSelectedTask(task)
+    // Refresh the tasks list to show the new/updated task
+    if (refreshTasks.current) {
+      await refreshTasks.current()
+    }
   }
 
   return (
@@ -85,6 +101,11 @@ const App: React.FC = () => {
       <QuickTaskModal
         isOpen={trayMenuState.quickTaskModalOpen}
         onClose={() => setQuickTaskModalOpen(false)}
+        onTaskCreated={() => {
+          if (refreshTasks.current) {
+            refreshTasks.current()
+          }
+        }}
       />
 
       {/* Project Form Modal */}
@@ -124,6 +145,7 @@ const App: React.FC = () => {
             selectedProjectId={selectedProject?.id}
             onProjectSelect={handleProjectSelect}
             onCreateProject={handleCreateProject}
+            onProjectsRefresh={(fn) => { refreshProjects.current = fn }}
           />
 
           <div className="main-panel">
@@ -164,6 +186,7 @@ const App: React.FC = () => {
                 onEditTask={handleEditTask}
                 searchQuery={searchQuery}
                 statusFilter={statusFilter}
+                onTasksRefresh={(fn) => { refreshTasks.current = fn }}
               />
             ) : (
               <TimelineView

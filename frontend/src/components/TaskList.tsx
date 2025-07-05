@@ -30,6 +30,7 @@ interface TaskListProps {
   onEditTask: (task: Task) => void;
   searchQuery?: string;
   statusFilter?: TaskStatus | 'all';
+  onTasksRefresh?: (refreshFn: () => Promise<void>) => void;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -38,7 +39,8 @@ export const TaskList: React.FC<TaskListProps> = ({
   onCreateTask,
   onEditTask,
   searchQuery = '',
-  statusFilter = 'all'
+  statusFilter = 'all',
+  onTasksRefresh
 }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
@@ -59,6 +61,13 @@ export const TaskList: React.FC<TaskListProps> = ({
       setTasks([]);
     }
   }, [selectedProject]);
+
+  useEffect(() => {
+    // Provide the refresh function to the parent
+    if (onTasksRefresh) {
+      onTasksRefresh(loadTasks);
+    }
+  }, [onTasksRefresh, selectedProject]);
 
   const loadTasks = async () => {
     if (!selectedProject) return;

@@ -9,12 +9,14 @@ interface ProjectSidebarProps {
   selectedProjectId?: number;
   onProjectSelect: (project: Project) => void;
   onCreateProject: () => void;
+  onProjectsRefresh?: (refreshFn: () => Promise<void>) => void;
 }
 
 export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   selectedProjectId,
   onProjectSelect,
-  onCreateProject
+  onCreateProject,
+  onProjectsRefresh
 }) => {
   const [projects, setProjects] = useState<(Project & { task_count: number })[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,13 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   useEffect(() => {
     loadProjects();
   }, []);
+
+  useEffect(() => {
+    // Provide the refresh function to the parent
+    if (onProjectsRefresh) {
+      onProjectsRefresh(loadProjects);
+    }
+  }, [onProjectsRefresh]);
 
   const loadProjects = async () => {
     try {

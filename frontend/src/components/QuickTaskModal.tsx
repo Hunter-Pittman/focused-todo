@@ -9,12 +9,14 @@ interface QuickTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultProjectId?: number;
+  onTaskCreated?: () => void;
 }
 
 export const QuickTaskModal: React.FC<QuickTaskModalProps> = ({ 
   isOpen, 
   onClose, 
-  defaultProjectId 
+  defaultProjectId,
+  onTaskCreated 
 }) => {
   const { addTask, setError } = useApp();
   const projects = useProjects();
@@ -134,6 +136,11 @@ export const QuickTaskModal: React.FC<QuickTaskModalProps> = ({
           'Task Created',
           `"${title}" added to ${project ? project.name : 'project'}`
         );
+      }
+
+      // Trigger refresh of task list
+      if (onTaskCreated) {
+        onTaskCreated();
       }
 
       handleClose();
