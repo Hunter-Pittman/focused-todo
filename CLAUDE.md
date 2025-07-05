@@ -16,27 +16,47 @@ The application will use:
 
 ## Development Commands
 
-Since the project is not yet initialized, you'll need to set up the development environment:
+The application is fully implemented and ready for development. Use these commands:
 
-### Initial Setup
+### Main Development Commands
 ```bash
-# Initialize frontend
-cd frontend && npm init -y
-npm install electron react react-dom
+# Start complete development environment (backend + frontend + Electron)
+./dev-start.sh                    # Linux/macOS
+.\scripts\development\dev-start.ps1   # Windows
 
-# Initialize backend
-cd backend && go mod init focused-todo/backend
+# Run all tests (backend, frontend, integration, linting)
+./test-all.sh --coverage --verbose    # Linux/macOS
+.\scripts\testing\test-all.ps1 -Coverage -Verbose  # Windows
 
-# Install development dependencies
-npm install --save-dev @types/react @types/react-dom typescript
+# Run integration tests
+./integration-tests.sh --verbose      # Linux/macOS
+.\scripts\testing\integration-tests.ps1 -Verbose   # Windows
+
+# Build all components
+./scripts/development/build-all.sh    # Linux/macOS
+.\scripts\development\build-all.ps1   # Windows
 ```
 
-### Future Development Commands (to be implemented)
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run test` - Run tests
-- `go test ./...` - Run Go backend tests
-- `npm run package` - Package for distribution
+### Component-Specific Commands
+```bash
+# Backend only
+cd backend && go test ./...           # Run Go tests
+cd backend && go build ./cmd/focused-todo  # Build backend
+
+# Frontend only
+cd frontend && npm test               # Run React tests
+cd frontend && npm run dev            # Start Vite dev server
+cd frontend && npm run build          # Build for production
+
+# Shared types
+cd shared && npm run build            # Build TypeScript types
+```
+
+### Script Organization
+All scripts are organized in the `scripts/` directory:
+- `scripts/development/` - Development and build scripts
+- `scripts/testing/` - Test execution scripts
+- Root directory contains convenience wrappers for common commands
 
 ## Project Structure (Planned)
 
