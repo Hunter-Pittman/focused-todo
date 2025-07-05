@@ -73,7 +73,7 @@ Write-Host "[OK] All dependencies found" -ForegroundColor Green
 
 # Build the shared types first
 Write-Host "[BUILD] Building shared types..." -ForegroundColor Cyan
-Set-Location "$RootDir\shared"
+Set-Location (Join-Path $RootDir 'shared')
 try {
     npm install
     if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
@@ -90,7 +90,7 @@ Set-Location $RootDir
 
 # Build and start the backend
 Write-Host "[BUILD] Building backend..." -ForegroundColor Cyan
-Set-Location "$RootDir\backend"
+Set-Location (Join-Path $RootDir 'backend')
 try {
     # Create bin directory if it doesn't exist
     if (-not (Test-Path "bin")) {
@@ -99,13 +99,13 @@ try {
     }
     
     Write-Host "Running go build..." -ForegroundColor Gray
-    Write-Host "Command: go build -o bin\focused-todo.exe .\cmd\focused-todo" -ForegroundColor Gray
+    Write-Host 'Command: go build -o bin\focused-todo.exe .\cmd\focused-todo' -ForegroundColor Gray
     
     # Enable CGO for SQLite support
     $env:CGO_ENABLED = "1"
     
     # Capture both stdout and stderr
-    $buildOutput = go build -o "bin\focused-todo.exe" ".\cmd\focused-todo" 2>&1
+    $buildOutput = go build -o 'bin\focused-todo.exe' '.\cmd\focused-todo' 2>&1
     
     if ($LASTEXITCODE -ne 0) { 
         Write-Host "Go build output:" -ForegroundColor Red
@@ -118,7 +118,7 @@ try {
     Get-ChildItem -Path "bin" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  - $_" -ForegroundColor Gray }
     
     # Verify the executable was created
-    if (-not (Test-Path "bin\focused-todo.exe")) {
+    if (-not (Test-Path 'bin\focused-todo.exe')) {
         throw "Backend executable was not created"
     }
     
@@ -133,7 +133,7 @@ catch {
 
 Write-Host "[START] Starting backend server..." -ForegroundColor Yellow
 # The executable is in backend/bin, not root/bin
-$BackendPath = Join-Path $RootDir "backend\bin\focused-todo.exe"
+$BackendPath = Join-Path $RootDir 'backend\bin\focused-todo.exe'
 Write-Host "Backend path: $BackendPath" -ForegroundColor Gray
 
 # Verify the backend executable exists before trying to start it
@@ -152,15 +152,15 @@ Write-Host "Waiting for backend to start..." -ForegroundColor Yellow
 Start-Sleep -Seconds 3
 
 # Build and start the frontend
-Write-Host "[BUILD] Building and starting frontend..." -ForegroundColor Cyan
-Set-Location "$RootDir\frontend"
+Write-Host '[BUILD] Building and starting frontend...' -ForegroundColor Cyan
+Set-Location (Join-Path $RootDir 'frontend')
 try {
     Write-Host "Installing frontend dependencies..." -ForegroundColor Gray
     npm install
     if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
     
     # Verify concurrently is installed
-    if (-not (Test-Path "node_modules\.bin\concurrently.cmd")) {
+    if (-not (Test-Path 'node_modules\.bin\concurrently.cmd')) {
         Write-Host "Installing concurrently..." -ForegroundColor Yellow
         npm install --save-dev concurrently
         if ($LASTEXITCODE -ne 0) { throw "Failed to install concurrently" }
@@ -201,7 +201,7 @@ $null = Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { Stop
 
 try {
     # Make sure we're in the frontend directory
-    $frontendPath = Join-Path $RootDir "frontend"
+    $frontendPath = Join-Path $RootDir 'frontend'
     Set-Location $frontendPath
     
     Write-Host '[INFO] Starting Electron app with React dev server...' -ForegroundColor Cyan
