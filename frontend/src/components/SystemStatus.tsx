@@ -13,12 +13,41 @@ interface SystemStatusProps {
 export const SystemStatus: React.FC<SystemStatusProps> = ({ className = '' }) => {
   const [backendUrl, setBackendUrl] = useState<string>('')
   const [backendStatus, setBackendStatus] = useState<'loading' | 'connected' | 'error'>('loading')
-  const [electronStatus, setElectronStatus] = useState<'available' | 'unavailable'>('unavailable')
+  const [electronStatus, setElectronStatus] = useState<'loading' | 'available' | 'unavailable'>('loading')
   const [lastCheck, setLastCheck] = useState<Date | null>(null)
 
-  // Check Electron API availability
+  // Check Electron API availability with retry logic
   useEffect(() => {
-    setElectronStatus(window.electronAPI ? 'available' : 'unavailable')
+    let retryCount = 0
+    const maxRetries = 50 // 5 seconds total (50 * 100ms)
+    let retryTimer: NodeJS.Timeout
+
+    const checkElectronAPI = (): void => {
+      if (typeof window !== 'undefined' && window.electronAPI) {
+        console.log('Electron API detected after', retryCount, 'retries')
+        setElectronStatus('available')
+        return
+      }
+
+      retryCount++
+      if (retryCount < maxRetries) {
+        retryTimer = setTimeout(checkElectronAPI, 100)
+      } else {
+        // After max retries, assume we're running in browser/development
+        console.log('Electron API not detected after', maxRetries, 'retries')
+        setElectronStatus('unavailable')
+      }
+    }
+
+    // Start checking immediately
+    checkElectronAPI()
+
+    // Cleanup timer on unmount
+    return () => {
+      if (retryTimer) {
+        clearTimeout(retryTimer)
+      }
+    }
   }, [])
 
   // Get backend URL and test connection
@@ -190,7 +219,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({ className = '' }) =>
           <button 
             className="action-button"
             onClick={handleTestElectronAPI}
-            disabled={electronStatus === 'unavailable'}
+            disabled={electronStatus !== 'available'}
           >
             Test Electron API
           </button>
@@ -198,7 +227,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({ className = '' }) =>
           <button 
             className="action-button"
             onClick={handleToggleWindow}
-            disabled={electronStatus === 'unavailable'}
+            disabled={electronStatus !== 'available'}
           >
             Test Window Hide/Show
           </button>
